@@ -7,15 +7,12 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8500"]
       interval: 5s
-      timeout: 10s
-      retries: 5
-  config:
+      timeout: 5s
+      retries: 3
+  config-server:
     build: ./config
     environment:
       CONSUL_HOST: "consul"
-#      SERVICE_TAG: "dev"
-    ports:
-      - "8081:8081"
   micro:
     command: --registry_address=consul:8500 api
     image: microhq/micro:latest
@@ -25,9 +22,10 @@ services:
       - consul
   greeter_api:
     build: ./api/greeter
-    command: --registry_address=consul:8500
+    command: --registry_address=consul:8500 --profile=test --config_server=http://config-server:8081
     environment:
       MICRO_SERVER_ADDRESS: ":35177"
+    restart: always
     depends_on:
       - consul
       - greeter
