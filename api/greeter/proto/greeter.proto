@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+import "github.com/micro/go-api/proto/api.proto";
+
+service Greeter {
+    rpc Hello(go.api.Request) returns(go.api.Response) {};
+}
