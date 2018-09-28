@@ -1,0 +1,20 @@
+spring:
+  cloud:
+    consul:
+      host: ${CONSUL_HOST}
+      port: 8500
+      enabled: true
+      discovery:
+        enabled: true
+        register: true
+        preferIpAddress: true
+        heartbeat:
+          enabled: true
+          ttlValue: 10
+    config:
+      server:
+        git:
+          uri: https://github.com/xbox1994/GoMicroConfig.git
+          searchPaths: '{application}/{profile}'
+server:
+  port: 8081

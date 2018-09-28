@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: config-server
+  cloud:
+    consul:
+      config:
+        enabled: false
+        failFast: true

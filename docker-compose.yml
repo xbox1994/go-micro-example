@@ -9,6 +9,13 @@ services:
       interval: 5s
       timeout: 10s
       retries: 5
+  config:
+    build: ./config
+    environment:
+      CONSUL_HOST: "consul"
+#      SERVICE_TAG: "dev"
+    ports:
+      - "8081:8081"
   micro:
     command: --registry_address=consul:8500 api
     image: microhq/micro:latest
