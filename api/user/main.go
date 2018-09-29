@@ -1,9 +1,9 @@
 package main
 
 import (
+	"GoMicroExample/api"
 	"GoMicroExample/api/user/proto"
 	userApi "GoMicroExample/api/user/proto"
-	tokenService "GoMicroExample/api/user/service"
 	"context"
 	"encoding/json"
 	"github.com/micro/go-api/proto"
@@ -13,7 +13,6 @@ import (
 )
 
 type UserService struct {
-	TokenService tokenService.Authable
 }
 
 func (us *UserService) Login(ctx context.Context, req *go_api.Request, rsp *go_api.Response) error {
@@ -33,7 +32,7 @@ func (us *UserService) Login(ctx context.Context, req *go_api.Request, rsp *go_a
 	var user user.UserInfo
 	json.Unmarshal([]byte(req.Body), &user)
 
-	token, e := us.TokenService.Encode(&user)
+	token, e := api.Encode(&user)
 	if e != nil {
 		return e
 	}
@@ -44,37 +43,15 @@ func (us *UserService) Login(ctx context.Context, req *go_api.Request, rsp *go_a
 	return nil
 }
 
-func (us *UserService) ValidateToken(ctx context.Context, req *userApi.Token, rsp *userApi.UserInfo) error {
-	if req.Token == "" {
-		return errors.InternalServerError("go.micro.api.user", "empty token")
-	}
-
-	decode, e := us.TokenService.Decode(req.Token)
-	if e != nil {
-		return e
-	}
-
-	if decode.User.Id == "" {
-		return errors.InternalServerError("go.micro.api.user", "invalid user")
-	}
-
-	rsp.Username = decode.User.Username
-	rsp.Password = decode.User.Password
-	rsp.Id = decode.User.Id
-	return nil
-}
-
 func main() {
 	service := micro.NewService(
 		micro.Name("go.micro.api.user"),
-		//micro.WrapHandler(api.AuthWrapper),
+		micro.WrapHandler(api.AuthWrapper),
 	)
 
 	service.Init()
 
-	userApi.RegisterUserHandler(service.Server(), &UserService{
-		TokenService: &tokenService.TokenService{},
-	})
+	userApi.RegisterUserHandler(service.Server(), &UserService{})
 
 	if err := service.Run(); err != nil {
 		log.Fatal(err)

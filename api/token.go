@@ -1,15 +1,10 @@
-package service
+package api
 
 import (
 	"GoMicroExample/api/user/proto"
 	"github.com/dgrijalva/jwt-go"
 	"time"
 )
-
-type Authable interface {
-	Decode(tokenStr string) (*CustomClaims, error)
-	Encode(user *user.UserInfo) (string, error)
-}
 
 var privateKey = []byte("`xs#a_1-!")
 
@@ -20,7 +15,7 @@ type CustomClaims struct {
 	jwt.StandardClaims
 }
 
-func (srv *TokenService) Decode(tokenStr string) (*CustomClaims, error) {
+func Decode(tokenStr string) (*CustomClaims, error) {
 	t, err := jwt.ParseWithClaims(tokenStr, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return privateKey, nil
 	})
@@ -37,10 +32,7 @@ func (srv *TokenService) Decode(tokenStr string) (*CustomClaims, error) {
 	}
 }
 
-type TokenService struct {
-}
-
-func (srv *TokenService) Encode(user *user.UserInfo) (string, error) {
+func Encode(user *user.UserInfo) (string, error) {
 	// 三天后过期
 	expireTime := time.Now().Add(time.Hour * 24 * 3).Unix()
 	claims := CustomClaims{

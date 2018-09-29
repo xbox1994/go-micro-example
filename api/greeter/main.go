@@ -27,17 +27,19 @@ func (ga *Greeter) Hello(ctx context.Context, req *go_api.Request, rsp *go_api.R
 		return errors.Unauthorized("go.micro.api.greeter", "no auth meta-data found in request")
 	}
 	token := meta["Token"]
-	authResp, err := ga.userClient.ValidateToken(context.Background(), &user.Token{
-		Token: token,
-	})
-	log.Println("Auth Resp:", authResp)
-	if err != nil {
-		return err
+
+	decode, e := api.Decode(token)
+	if e != nil {
+		return e
 	}
+	if decode.User.Id == "" {
+		return errors.InternalServerError("go.micro.api.user", "invalid user")
+	}
+	log.Println("Token decoded info:", decode.User)
 
 	rsp.StatusCode = 200
 	b, _ := json.Marshal(
-		map[string]string{"message": "nice to meet u, " + authResp.Username + ", your password is:" + authResp.Password + ", your id is:" + authResp.Id})
+		map[string]string{"message": "nice to meet u, " + decode.User.Username + ", your password: " + decode.User.Password + ", your id: " + decode.User.Id})
 
 	rsp.Body = string(b)
 	return nil

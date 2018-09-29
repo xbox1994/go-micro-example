@@ -45,7 +45,6 @@ var _ server.Option
 
 type UserService interface {
 	Login(ctx context.Context, in *go_api.Request, opts ...client.CallOption) (*go_api.Response, error)
-	ValidateToken(ctx context.Context, in *Token, opts ...client.CallOption) (*UserInfo, error)
 }
 
 type userService struct {
@@ -76,27 +75,15 @@ func (c *userService) Login(ctx context.Context, in *go_api.Request, opts ...cli
 	return out, nil
 }
 
-func (c *userService) ValidateToken(ctx context.Context, in *Token, opts ...client.CallOption) (*UserInfo, error) {
-	req := c.c.NewRequest(c.name, "User.ValidateToken", in)
-	out := new(UserInfo)
-	err := c.c.Call(ctx, req, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // Server API for User service
 
 type UserHandler interface {
 	Login(context.Context, *go_api.Request, *go_api.Response) error
-	ValidateToken(context.Context, *Token, *UserInfo) error
 }
 
 func RegisterUserHandler(s server.Server, hdlr UserHandler, opts ...server.HandlerOption) error {
 	type user interface {
 		Login(ctx context.Context, in *go_api.Request, out *go_api.Response) error
-		ValidateToken(ctx context.Context, in *Token, out *UserInfo) error
 	}
 	type User struct {
 		user
@@ -111,8 +98,4 @@ type userHandler struct {
 
 func (h *userHandler) Login(ctx context.Context, in *go_api.Request, out *go_api.Response) error {
 	return h.UserHandler.Login(ctx, in, out)
-}
-
-func (h *userHandler) ValidateToken(ctx context.Context, in *Token, out *UserInfo) error {
-	return h.UserHandler.ValidateToken(ctx, in, out)
 }
