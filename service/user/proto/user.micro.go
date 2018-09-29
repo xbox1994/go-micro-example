@@ -8,6 +8,7 @@ It is generated from these files:
 	user.proto
 
 It has these top-level messages:
+	Empty
 	UserInfo
 	Token
 */
@@ -45,6 +46,7 @@ var _ server.Option
 
 type UserService interface {
 	Login(ctx context.Context, in *go_api.Request, opts ...client.CallOption) (*go_api.Response, error)
+	GetUserInfo(ctx context.Context, in *Empty, opts ...client.CallOption) (*UserInfo, error)
 }
 
 type userService struct {
@@ -75,15 +77,27 @@ func (c *userService) Login(ctx context.Context, in *go_api.Request, opts ...cli
 	return out, nil
 }
 
+func (c *userService) GetUserInfo(ctx context.Context, in *Empty, opts ...client.CallOption) (*UserInfo, error) {
+	req := c.c.NewRequest(c.name, "User.GetUserInfo", in)
+	out := new(UserInfo)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for User service
 
 type UserHandler interface {
 	Login(context.Context, *go_api.Request, *go_api.Response) error
+	GetUserInfo(context.Context, *Empty, *UserInfo) error
 }
 
 func RegisterUserHandler(s server.Server, hdlr UserHandler, opts ...server.HandlerOption) error {
 	type user interface {
 		Login(ctx context.Context, in *go_api.Request, out *go_api.Response) error
+		GetUserInfo(ctx context.Context, in *Empty, out *UserInfo) error
 	}
 	type User struct {
 		user
@@ -98,4 +112,8 @@ type userHandler struct {
 
 func (h *userHandler) Login(ctx context.Context, in *go_api.Request, out *go_api.Response) error {
 	return h.UserHandler.Login(ctx, in, out)
+}
+
+func (h *userHandler) GetUserInfo(ctx context.Context, in *Empty, out *UserInfo) error {
+	return h.UserHandler.GetUserInfo(ctx, in, out)
 }

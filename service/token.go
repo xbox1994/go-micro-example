@@ -15,7 +15,7 @@ type CustomClaims struct {
 	jwt.StandardClaims
 }
 
-func Decode(tokenStr string) (*CustomClaims, error) {
+func Decode(tokenStr string) (*user.UserInfo, error) {
 	t, err := jwt.ParseWithClaims(tokenStr, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return privateKey, nil
 	})
@@ -26,7 +26,7 @@ func Decode(tokenStr string) (*CustomClaims, error) {
 
 	// 解密转换类型并返回
 	if claims, ok := t.Claims.(*CustomClaims); ok && t.Valid {
-		return claims, nil
+		return claims.User, nil
 	} else {
 		return nil, err
 	}

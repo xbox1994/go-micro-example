@@ -10,7 +10,6 @@ import (
 	"github.com/micro/cli"
 	"github.com/micro/go-api/proto"
 	"github.com/micro/go-micro"
-	"github.com/micro/go-micro/errors"
 	"github.com/micro/go-micro/metadata"
 	"log"
 )
@@ -22,24 +21,18 @@ type Greeter struct {
 func (ga *Greeter) Hello(ctx context.Context, req *go_api.Request, rsp *go_api.Response) error {
 	log.Print("Received Greeter.Hello API request")
 
-	meta, ok := metadata.FromContext(ctx)
-	if !ok {
-		return errors.Unauthorized("go.micro.api.greeter", "no auth meta-data found in request")
-	}
-	token := meta["Token"]
+	meta, _ := metadata.FromContext(ctx)
+	log.Println(meta)
+	info, e := ga.userClient.GetUserInfo(ctx, &user.Empty{})
 
-	decode, e := service.Decode(token)
 	if e != nil {
 		return e
 	}
-	if decode.User.Id == "" {
-		return errors.InternalServerError("go.micro.api.user", "invalid user")
-	}
-	log.Println("Token decoded info:", decode.User)
 
 	rsp.StatusCode = 200
 	b, _ := json.Marshal(
-		map[string]string{"message": "nice to meet u, " + decode.User.Username + ", your password: " + decode.User.Password + ", your id: " + decode.User.Id})
+		map[string]string{"message": "nice to meet u, I know your username,password,id in token, and email in db.",
+			"username": info.Username, "password": info.Password, "id": info.Id, "email": info.Email})
 
 	rsp.Body = string(b)
 	return nil

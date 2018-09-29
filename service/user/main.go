@@ -9,10 +9,23 @@ import (
 	"github.com/micro/go-api/proto"
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/errors"
+	"github.com/micro/go-micro/metadata"
 	"log"
 )
 
 type UserService struct {
+}
+
+func (us *UserService) GetUserInfo(ctx context.Context, req *userApi.Empty, rsp *userApi.UserInfo) error {
+	meta, ok := metadata.FromContext(ctx)
+	if !ok {
+		return errors.Unauthorized("go.micro.api.user", "no auth meta-data found in request")
+	}
+	rsp.Id = meta["id"]
+	rsp.Username = meta["username"]
+	rsp.Password = meta["password"]
+	rsp.Email = meta["username"] + "@qq.com"
+	return nil
 }
 
 func (us *UserService) Login(ctx context.Context, req *go_api.Request, rsp *go_api.Response) error {

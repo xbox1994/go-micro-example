@@ -18,9 +18,16 @@ func AuthWrapper(fn server.HandlerFunc) server.HandlerFunc {
 		if !ok {
 			return errors.New("no auth meta-data found in request")
 		}
-		token := meta["Token"]
-		claims, e := Decode(token)
-		log.Println("Auth Resp:", claims.User)
+		token := meta["Authorization"]
+		userFromToken, e := Decode(token)
+
+		strings := map[string]string{
+			"id":       userFromToken.Id,
+			"username": userFromToken.Username,
+			"password": userFromToken.Password}
+		ctx = metadata.NewContext(ctx, strings)
+
+		log.Println("Token decoded info:", userFromToken)
 		if e != nil {
 			return e
 		}

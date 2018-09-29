@@ -2,14 +2,19 @@ syntax = "proto3";
 
 import "github.com/micro/go-api/proto/api.proto";
 
-service User{
-    rpc Login(go.api.Request) returns(go.api.Response) {};
+service User {
+    rpc Login (go.api.Request) returns (go.api.Response) {};
+    rpc GetUserInfo (Empty) returns (UserInfo) {};
+}
+
+message Empty {
 }
 
 message UserInfo {
     string id = 1;
     string username = 2;
     string password = 3;
+    string email = 4;
 }
 
 message Token {
