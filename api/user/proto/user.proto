@@ -2,6 +2,18 @@ syntax = "proto3";
 
 import "github.com/micro/go-api/proto/api.proto";
 
-service User {
+service User{
     rpc Login(go.api.Request) returns(go.api.Response) {};
+    rpc ValidateToken (Token) returns (UserInfo) {}
+}
+
+message UserInfo {
+    string id = 1;
+    string username = 2;
+    string password = 3;
+}
+
+message Token {
+    string token = 1;
+    bool valid = 2;
 }

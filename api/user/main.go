@@ -1,61 +1,79 @@
 package main
 
 import (
-	"GoMicroExample/api"
+	"GoMicroExample/api/user/proto"
 	userApi "GoMicroExample/api/user/proto"
-	userService "GoMicroExample/service/user/proto"
+	tokenService "GoMicroExample/api/user/service"
 	"context"
 	"encoding/json"
 	"github.com/micro/go-api/proto"
 	"github.com/micro/go-micro"
-	"github.com/micro/go-micro/client"
-	"github.com/micro/go-micro/server"
+	"github.com/micro/go-micro/errors"
 	"log"
 )
 
-type User struct {
-	userServiceClient userService.UserService
+type UserService struct {
+	TokenService tokenService.Authable
 }
 
-func (ua *User) Login(ctx context.Context, req *go_api.Request, rsp *go_api.Response) error {
-	authResp, err := ua.userServiceClient.Login(context.Background(), &userService.User{
-		Id:       "id",
-		Username: "username",
-		Password: "username",
-	})
-
-	if err != nil {
-		return err
+func (us *UserService) Login(ctx context.Context, req *go_api.Request, rsp *go_api.Response) error {
+	if req.Method != "POST" {
+		return errors.BadRequest("go.micro.api.user", "require post")
 	}
 
-	log.Println("Login Resp:", authResp)
+	ct, ok := req.Header["Content-Type"]
+	if !ok || len(ct.Values) == 0 {
+		return errors.BadRequest("go.micro.api.user", "need content-type")
+	}
+
+	if ct.Values[0] != "application/json" {
+		return errors.BadRequest("go.micro.api.user", "expect application/json")
+	}
+
+	var user user.UserInfo
+	json.Unmarshal([]byte(req.Body), &user)
+
+	token, e := us.TokenService.Encode(&user)
+	if e != nil {
+		return e
+	}
 	b, _ := json.Marshal(map[string]string{
-		"token": authResp.Token,
+		"token": token,
 	})
 	rsp.Body = string(b)
-	return err
+	return nil
 }
 
-func AuthWithoutLoginWrapper(fn server.HandlerFunc) server.HandlerFunc {
-	return func(ctx context.Context, req server.Request, resp interface{}) error {
-		if req.Service() == "go.micro.api.user" && req.Method() == "User.Login" {
-			err := fn(ctx, req, resp)
-			return err
-		}
-		return api.AuthWrapper(fn)(ctx, req, resp)
+func (us *UserService) ValidateToken(ctx context.Context, req *userApi.Token, rsp *userApi.UserInfo) error {
+	if req.Token == "" {
+		return errors.InternalServerError("go.micro.api.user", "empty token")
 	}
+
+	decode, e := us.TokenService.Decode(req.Token)
+	if e != nil {
+		return e
+	}
+
+	if decode.User.Id == "" {
+		return errors.InternalServerError("go.micro.api.user", "invalid user")
+	}
+
+	rsp.Username = decode.User.Username
+	rsp.Password = decode.User.Password
+	rsp.Id = decode.User.Id
+	return nil
 }
 
 func main() {
 	service := micro.NewService(
 		micro.Name("go.micro.api.user"),
-		micro.WrapHandler(AuthWithoutLoginWrapper),
+		//micro.WrapHandler(api.AuthWrapper),
 	)
 
 	service.Init()
 
-	userApi.RegisterUserHandler(service.Server(), &User{
-		userServiceClient: userService.NewUserService("go.micro.srv.user", client.DefaultClient),
+	userApi.RegisterUserHandler(service.Server(), &UserService{
+		TokenService: &tokenService.TokenService{},
 	})
 
 	if err := service.Run(); err != nil {

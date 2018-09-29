@@ -1,14 +1,14 @@
 package service
 
 import (
-	"GoMicroExample/service/user/proto"
+	"GoMicroExample/api/user/proto"
 	"github.com/dgrijalva/jwt-go"
 	"time"
 )
 
 type Authable interface {
 	Decode(tokenStr string) (*CustomClaims, error)
-	Encode(user *user.User) (string, error)
+	Encode(user *user.UserInfo) (string, error)
 }
 
 var privateKey = []byte("`xs#a_1-!")
@@ -16,7 +16,7 @@ var privateKey = []byte("`xs#a_1-!")
 // 自定义的 metadata
 // 在加密后作为 JWT 的第二部分返回给客户端
 type CustomClaims struct {
-	User *user.User
+	User *user.UserInfo
 	jwt.StandardClaims
 }
 
@@ -40,16 +40,13 @@ func (srv *TokenService) Decode(tokenStr string) (*CustomClaims, error) {
 type TokenService struct {
 }
 
-//
-// 将 User 用户信息加密为 JWT 字符串
-//
-func (srv *TokenService) Encode(user *user.User) (string, error) {
+func (srv *TokenService) Encode(user *user.UserInfo) (string, error) {
 	// 三天后过期
 	expireTime := time.Now().Add(time.Hour * 24 * 3).Unix()
 	claims := CustomClaims{
 		user,
 		jwt.StandardClaims{
-			Issuer:    "go.micro.srv.user", // 签发者
+			Issuer:    "go.micro.api.user", // 签发者
 			ExpiresAt: expireTime,
 		},
 	}

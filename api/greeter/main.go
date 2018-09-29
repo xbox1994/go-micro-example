@@ -3,42 +3,42 @@ package main
 import (
 	"GoMicroExample/api"
 	greeterApi "GoMicroExample/api/greeter/proto"
-	"GoMicroExample/config"
-	greeterService "GoMicroExample/service/greeter/proto"
+	"GoMicroExample/api/user/proto"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/micro/cli"
 	"github.com/micro/go-api/proto"
 	"github.com/micro/go-micro"
-	"github.com/micro/go-micro/client"
+	"github.com/micro/go-micro/errors"
+	"github.com/micro/go-micro/metadata"
 	"log"
-	"strings"
 )
 
 type Greeter struct {
-	greeterServiceClient greeterService.GreeterService
+	userClient user.UserService
 }
 
 func (ga *Greeter) Hello(ctx context.Context, req *go_api.Request, rsp *go_api.Response) error {
-	log.Print("Received Say.Hello API request")
+	log.Print("Received Greeter.Hello API request")
 
-	name, ok := req.Get["name"]
-
-	if !ok || len(name.Values) == 0 {
-		return errors.New("no name")
+	meta, ok := metadata.FromContext(ctx)
+	if !ok {
+		return errors.Unauthorized("go.micro.api.greeter", "no auth meta-data found in request")
+	}
+	token := meta["Token"]
+	authResp, err := ga.userClient.ValidateToken(context.Background(), &user.Token{
+		Token: token,
+	})
+	log.Println("Auth Resp:", authResp)
+	if err != nil {
+		return err
 	}
 
-	ga.greeterServiceClient.Hello(context.TODO(), &greeterService.HelloRequest{
-		Name: name.Values[0],
-	})
-
 	rsp.StatusCode = 200
+	b, _ := json.Marshal(
+		map[string]string{"message": "nice to meet u, " + authResp.Username + ", your password is:" + authResp.Password + ", your id is:" + authResp.Id})
 
-	b, _ := json.Marshal(map[string]string{
-		"message": config["string"].(string) + "and we got your name " + strings.Join(name.Values, " "),
-	})
 	rsp.Body = string(b)
 	return nil
 }
@@ -70,12 +70,11 @@ func main() {
 			if len(configServer) > 0 {
 				fmt.Println("config_server set to", configServer)
 			}
-			config = conf.GetConfig(configServer, "greeter", profile)
+			//config = conf.GetConfig(configServer, "greeter", profile)
 		}))
 
 	greeterApi.RegisterGreeterHandler(service.Server(), &Greeter{
-		greeterServiceClient: greeterService.NewGreeterService("go.micro.srv.greeter", client.DefaultClient),
-	})
+		userClient: user.NewUserService("go.micro.api.user", service.Client())})
 
 	if err := service.Run(); err != nil {
 		log.Fatal(err)
