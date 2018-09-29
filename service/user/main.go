@@ -1,9 +1,9 @@
 package main
 
 import (
-	"GoMicroExample/api"
-	"GoMicroExample/api/user/proto"
-	userApi "GoMicroExample/api/user/proto"
+	"GoMicroExample/service"
+	"GoMicroExample/service/user/proto"
+	userApi "GoMicroExample/service/user/proto"
 	"context"
 	"encoding/json"
 	"github.com/micro/go-api/proto"
@@ -29,10 +29,10 @@ func (us *UserService) Login(ctx context.Context, req *go_api.Request, rsp *go_a
 		return errors.BadRequest("go.micro.api.user", "expect application/json")
 	}
 
-	var user user.UserInfo
-	json.Unmarshal([]byte(req.Body), &user)
+	var userInfo user.UserInfo
+	json.Unmarshal([]byte(req.Body), &userInfo)
 
-	token, e := api.Encode(&user)
+	token, e := service.Encode(&userInfo)
 	if e != nil {
 		return e
 	}
@@ -44,16 +44,16 @@ func (us *UserService) Login(ctx context.Context, req *go_api.Request, rsp *go_a
 }
 
 func main() {
-	service := micro.NewService(
+	userService := micro.NewService(
 		micro.Name("go.micro.api.user"),
-		micro.WrapHandler(api.AuthWrapper),
+		micro.WrapHandler(service.AuthWrapper),
 	)
 
-	service.Init()
+	userService.Init()
 
-	userApi.RegisterUserHandler(service.Server(), &UserService{})
+	userApi.RegisterUserHandler(userService.Server(), &UserService{})
 
-	if err := service.Run(); err != nil {
+	if err := userService.Run(); err != nil {
 		log.Fatal(err)
 	}
 }

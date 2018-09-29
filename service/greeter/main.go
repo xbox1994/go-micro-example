@@ -1,9 +1,9 @@
 package main
 
 import (
-	"GoMicroExample/api"
-	greeterApi "GoMicroExample/api/greeter/proto"
-	"GoMicroExample/api/user/proto"
+	"GoMicroExample/service"
+	greeterApi "GoMicroExample/service/greeter/proto"
+	"GoMicroExample/service/user/proto"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -28,7 +28,7 @@ func (ga *Greeter) Hello(ctx context.Context, req *go_api.Request, rsp *go_api.R
 	}
 	token := meta["Token"]
 
-	decode, e := api.Decode(token)
+	decode, e := service.Decode(token)
 	if e != nil {
 		return e
 	}
@@ -50,9 +50,9 @@ var (
 )
 
 func main() {
-	service := micro.NewService(
+	greeterService := micro.NewService(
 		micro.Name("go.micro.api.greeter"),
-		micro.WrapHandler(api.AuthWrapper),
+		micro.WrapHandler(service.AuthWrapper),
 		micro.Flags(
 			cli.StringFlag{
 				Name: "profile",
@@ -62,7 +62,7 @@ func main() {
 		),
 	)
 
-	service.Init(
+	greeterService.Init(
 		micro.Action(func(c *cli.Context) {
 			profile := c.String("profile")
 			if len(profile) > 0 {
@@ -75,10 +75,10 @@ func main() {
 			//config = conf.GetConfig(configServer, "greeter", profile)
 		}))
 
-	greeterApi.RegisterGreeterHandler(service.Server(), &Greeter{
-		userClient: user.NewUserService("go.micro.api.user", service.Client())})
+	greeterApi.RegisterGreeterHandler(greeterService.Server(), &Greeter{
+		userClient: user.NewUserService("go.micro.api.user", greeterService.Client())})
 
-	if err := service.Run(); err != nil {
+	if err := greeterService.Run(); err != nil {
 		log.Fatal(err)
 	}
 }

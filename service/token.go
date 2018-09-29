@@ -1,7 +1,7 @@
-package api
+package service
 
 import (
-	"GoMicroExample/api/user/proto"
+	"GoMicroExample/service/user/proto"
 	"github.com/dgrijalva/jwt-go"
 	"time"
 )

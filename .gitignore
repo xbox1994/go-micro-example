@@ -1,5 +1,3 @@
 .idea
-api/greeter/greeter
-api/user/user
 service/greeter/greeter
 service/user/user
