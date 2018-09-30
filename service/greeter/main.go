@@ -1,9 +1,7 @@
 package main
 
 import (
-	"GoMicroExample/config"
 	"GoMicroExample/hystrix"
-	"GoMicroExample/service"
 	greeterApi "GoMicroExample/service/greeter/proto"
 	"GoMicroExample/service/user/proto"
 	"context"
@@ -33,8 +31,8 @@ func (ga *Greeter) Hello(ctx context.Context, req *go_api.Request, rsp *go_api.R
 
 	rsp.StatusCode = 200
 	b, _ := json.Marshal(
-		map[string]string{"environment": config["string"].(string), "message": "nice to meet u, I know your username,password,id in token, and email in db.",
-			"username": info.Username, "password": info.Password, "id": info.Id, "email": info.Email})
+		map[string]string{"_environment": "xx", "_message": "nice to meet u, I know your id, username in token, and password in db.",
+			"id": info.Id, "username": info.Username, "password": info.Password})
 
 	rsp.Body = string(b)
 	return nil
@@ -48,7 +46,6 @@ func main() {
 	hystrix.Configure([]string{"go.micro.api.user.User.GetUserInfo"})
 	greeterService := micro.NewService(
 		micro.Name("go.micro.api.greeter"),
-		micro.WrapHandler(service.AuthWrapper),
 		micro.WrapClient(hystrix.NewClientWrapper()),
 		micro.Flags(
 			cli.StringFlag{
@@ -69,7 +66,7 @@ func main() {
 			if len(configServer) > 0 {
 				fmt.Println("config_server set to", configServer)
 			}
-			config = conf.GetConfig(configServer, "greeter", profile)
+			//config = conf.GetConfig(configServer, "greeter", profile)
 		}))
 
 	greeterApi.RegisterGreeterHandler(greeterService.Server(), &Greeter{

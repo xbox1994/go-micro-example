@@ -14,8 +14,8 @@ services:
     environment:
       CONSUL_HOST: "consul"
   micro:
+    build: ./api
     command: --registry_address=consul:8500 api
-    image: microhq/micro:latest
     ports:
       - "8080:8080"
     depends_on:

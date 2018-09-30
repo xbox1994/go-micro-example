@@ -1,7 +1,7 @@
 package main
 
 import (
-	"GoMicroExample/service"
+	"GoMicroExample/api/auth"
 	"GoMicroExample/service/user/proto"
 	userApi "GoMicroExample/service/user/proto"
 	"context"
@@ -21,10 +21,9 @@ func (us *UserService) GetUserInfo(ctx context.Context, req *userApi.Empty, rsp 
 	if !ok {
 		return errors.Unauthorized("go.micro.api.user", "no auth meta-data found in request")
 	}
-	rsp.Id = meta["id"]
-	rsp.Username = meta["username"]
-	rsp.Password = meta["password"]
-	rsp.Email = meta["username"] + "@qq.com"
+	rsp.Id = meta["X-Example-Id"]
+	rsp.Username = meta["X-Example-Username"]
+	rsp.Password = "password from db"
 	return nil
 }
 
@@ -45,7 +44,7 @@ func (us *UserService) Login(ctx context.Context, req *go_api.Request, rsp *go_a
 	var userInfo user.UserInfo
 	json.Unmarshal([]byte(req.Body), &userInfo)
 
-	token, e := service.Encode(&userInfo)
+	token, e := auth.Encode(&userInfo)
 	if e != nil {
 		return e
 	}
@@ -59,7 +58,6 @@ func (us *UserService) Login(ctx context.Context, req *go_api.Request, rsp *go_a
 func main() {
 	userService := micro.NewService(
 		micro.Name("go.micro.api.user"),
-		micro.WrapHandler(service.AuthWrapper),
 	)
 
 	userService.Init()
