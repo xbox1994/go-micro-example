@@ -1,6 +1,7 @@
 package main
 
 import (
+	"GoMicroExample/hystrix"
 	"GoMicroExample/service"
 	greeterApi "GoMicroExample/service/greeter/proto"
 	"GoMicroExample/service/user/proto"
@@ -39,13 +40,15 @@ func (ga *Greeter) Hello(ctx context.Context, req *go_api.Request, rsp *go_api.R
 }
 
 var (
-	config map[string]interface{}
+//config map[string]interface{}
 )
 
 func main() {
+	hystrix.Configure([]string{"go.micro.api.user.User.GetUserInfo"})
 	greeterService := micro.NewService(
 		micro.Name("go.micro.api.greeter"),
 		micro.WrapHandler(service.AuthWrapper),
+		micro.WrapClient(hystrix.NewClientWrapper()),
 		micro.Flags(
 			cli.StringFlag{
 				Name: "profile",
