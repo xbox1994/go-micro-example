@@ -21,11 +21,12 @@ func AuthWrapper(fn server.HandlerFunc) server.HandlerFunc {
 		token := meta["Authorization"]
 		userFromToken, e := Decode(token)
 
-		strings := map[string]string{
-			"id":       userFromToken.Id,
-			"username": userFromToken.Username,
-			"password": userFromToken.Password}
-		ctx = metadata.NewContext(ctx, strings)
+		userInfo := map[string]string{
+			"Authorization": token,
+			"id":            userFromToken.Id,
+			"username":      userFromToken.Username,
+			"password":      userFromToken.Password}
+		ctx = metadata.NewContext(ctx, userInfo)
 
 		log.Println("Token decoded info:", userFromToken)
 		if e != nil {
