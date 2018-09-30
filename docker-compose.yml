@@ -24,7 +24,7 @@ services:
     build: service/greeter
     command: --registry_address=consul:8500 --profile=test --config_server=http://config-server:8081
     environment:
-      MICRO_SERVER_ADDRESS: ":35177"
+      MICRO_SERVER_ADDRESS: ":50000"
     restart: always
     depends_on:
       - consul
@@ -32,6 +32,6 @@ services:
     build: service/user
     command: --registry_address=consul:8500
     environment:
-      MICRO_SERVER_ADDRESS: ":34869"
+      MICRO_SERVER_ADDRESS: ":50001"
     depends_on:
       - consul

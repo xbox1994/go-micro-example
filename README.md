@@ -7,4 +7,5 @@
 
 ## 运行方式
 1. `make`
+2. `docker-compose build`
 2. `docker-compose up --force-recreate`

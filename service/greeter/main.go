@@ -1,6 +1,7 @@
 package main
 
 import (
+	"GoMicroExample/config"
 	"GoMicroExample/hystrix"
 	"GoMicroExample/service"
 	greeterApi "GoMicroExample/service/greeter/proto"
@@ -32,7 +33,7 @@ func (ga *Greeter) Hello(ctx context.Context, req *go_api.Request, rsp *go_api.R
 
 	rsp.StatusCode = 200
 	b, _ := json.Marshal(
-		map[string]string{"message": "nice to meet u, I know your username,password,id in token, and email in db.",
+		map[string]string{"environment": config["string"].(string), "message": "nice to meet u, I know your username,password,id in token, and email in db.",
 			"username": info.Username, "password": info.Password, "id": info.Id, "email": info.Email})
 
 	rsp.Body = string(b)
@@ -40,7 +41,7 @@ func (ga *Greeter) Hello(ctx context.Context, req *go_api.Request, rsp *go_api.R
 }
 
 var (
-//config map[string]interface{}
+	config map[string]interface{}
 )
 
 func main() {
@@ -68,7 +69,7 @@ func main() {
 			if len(configServer) > 0 {
 				fmt.Println("config_server set to", configServer)
 			}
-			//config = conf.GetConfig(configServer, "greeter", profile)
+			config = conf.GetConfig(configServer, "greeter", profile)
 		}))
 
 	greeterApi.RegisterGreeterHandler(greeterService.Server(), &Greeter{
