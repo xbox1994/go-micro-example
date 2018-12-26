@@ -1,16 +1,15 @@
 基于go micro框架搭建的简单微服务例子，包含微服务组件网关、配置中心、熔断器以及具体服务。
 
-## 构建环境
-* Docker
-* golang 1.10版本级以上、dep包管理工具
+## 依赖
+* docker
+* golang、dep
 * protoc、protoc-gen-go、protoc-gen-micro
 * make
 
 ## 运行方式
-1. `dep ensure`
-2. `make`
-3. `docker-compose build`
-4. `docker-compose up --force-recreate`
+1. `make install`
+2. `make build`
+3. `make run`
 
 ## 整体架构
 以 greeter/hello 为例，请求流程图如下：
