@@ -1,19 +1,18 @@
 基于go micro框架搭建的简单微服务例子，包含微服务组件网关、配置中心、熔断器以及具体服务。
 
-## 需要安装的工具
+## 构建环境
 * Docker
-* Golang、项目依赖包
-* protoc-gen-micro
+* golang 1.10版本级以上、dep包管理工具
+* protoc、protoc-gen-go、protoc-gen-micro
 * make
 
 ## 运行方式
-1. `make`
-2. `docker-compose build`
-2. `docker-compose up --force-recreate`
+1. `dep ensure`
+2. `make`
+3. `docker-compose build`
+4. `docker-compose up --force-recreate`
 
 ## 整体架构
-http://www.wangtianyi.top/blog/2018/09/28/ji-yu-go-microde-wei-fu-wu-jia-gou-ben-di-shi-zhan/
-
 以 greeter/hello 为例，请求流程图如下：
 
 ![image](https://wx2.sinaimg.cn/mw1024/bea16acagy1fvrqdjvp9lj20na0hp3zg.jpg)
@@ -24,3 +23,5 @@ http://www.wangtianyi.top/blog/2018/09/28/ji-yu-go-microde-wei-fu-wu-jia-gou-ben
 4. UserService根据header中得到的id查询数据库得到具体的用户信息并返回
 
 在服务间请求调用过程中，会有Hystrix来提供服务容错机制。在所有服务启动之前，会请求Config Service来获得对应服务的对应环境的配置信息。
+
+详见： http://www.wangtianyi.top/blog/2018/09/28/ji-yu-go-microde-wei-fu-wu-jia-gou-ben-di-shi-zhan/
