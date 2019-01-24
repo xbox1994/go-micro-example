@@ -13,6 +13,8 @@ services:
     build: ./config
     environment:
       CONSUL_HOST: "consul"
+    ports:
+    - "8081:8081"
   micro:
     build: ./api
     command: --registry_address=consul:8500 api

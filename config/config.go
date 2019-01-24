@@ -14,13 +14,13 @@ const (
 	kConfigType    = "CONFIG_TYPE"
 )
 
-func GetConfig(consulHost string, serverName string, profile string) map[string]interface{} {
+func GetConfig(configServerHost string, serverName string, profile string) map[string]interface{} {
 	var config map[string]interface{}
 
 	viper.AutomaticEnv()
 
 	viper.SetDefault(kAppName, serverName)
-	viper.SetDefault(kConfigServer, consulHost)
+	viper.SetDefault(kConfigServer, configServerHost)
 	viper.SetDefault(kConfigProfile, profile)
 	viper.SetDefault(kConfigType, "yaml")
 
@@ -28,7 +28,7 @@ func GetConfig(consulHost string, serverName string, profile string) map[string]
 		log.Fatal("Fail to load config", err)
 	}
 
-	if err := sub("greetings", &config); err != nil {
+	if err := viper.Unmarshal(&config); err != nil {
 		log.Fatal("Fail to parse config", err)
 	}
 
@@ -50,11 +50,4 @@ func loadRemoteConfig() (err error) {
 	}
 	log.Println("Load config from: ", confAddr)
 	return
-}
-
-func sub(key string, value interface{}) error {
-	sub := viper.Sub(key)
-	sub.AutomaticEnv()
-	sub.SetEnvPrefix(key)
-	return sub.Unmarshal(value)
 }

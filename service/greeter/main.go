@@ -1,6 +1,7 @@
 package main
 
 import (
+	"GoMicroExample/config"
 	"GoMicroExample/hystrix"
 	greeterApi "GoMicroExample/service/greeter/proto"
 	"GoMicroExample/service/user/proto"
@@ -66,7 +67,9 @@ func main() {
 			if len(configServer) > 0 {
 				fmt.Println("config_server set to", configServer)
 			}
-			//config = conf.GetConfig(configServer, "greeter", profile)
+			// http://config-server:8081/greeter-prod.yml
+			config = conf.GetConfig(configServer, "greeter", profile)
+			fmt.Printf("config loaded from config-server is: %s\n", config)
 		}))
 
 	greeterApi.RegisterGreeterHandler(greeterService.Server(), &Greeter{
