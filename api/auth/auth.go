@@ -1,6 +1,9 @@
 package auth
 
 import (
+	"GoMicroExample/service/constant/code"
+	"GoMicroExample/service/util"
+	"encoding/json"
 	"github.com/micro/cli"
 	"github.com/micro/micro/plugin"
 	"log"
@@ -31,7 +34,11 @@ func (*Auth) Handler() plugin.Handler {
 			userFromToken, e := Decode(token)
 
 			if e != nil {
-				w.WriteHeader(http.StatusUnauthorized)
+				response, _ := json.Marshal(util.CommonResponse{
+					Code:    code.AuthorizationError,
+					Message: "please login",
+				})
+				w.Write(response)
 				return
 			}
 
