@@ -2,6 +2,7 @@ package main
 
 import (
 	"GoMicroExample/api/auth"
+	"GoMicroExample/service/constant/micro_c"
 	"GoMicroExample/service/user/proto"
 	userApi "GoMicroExample/service/user/proto"
 	"context"
@@ -19,7 +20,7 @@ type UserService struct {
 func (us *UserService) GetUserInfo(ctx context.Context, req *userApi.Empty, rsp *userApi.UserInfo) error {
 	meta, ok := metadata.FromContext(ctx)
 	if !ok {
-		return errors.Unauthorized("go.micro.api.user", "no auth meta-data found in request")
+		return errors.Unauthorized(micro_c.MicroNameUser, "no auth meta-data found in request")
 	}
 	rsp.Id = meta["X-Example-Id"]
 	rsp.Username = meta["X-Example-Username"]
@@ -29,16 +30,16 @@ func (us *UserService) GetUserInfo(ctx context.Context, req *userApi.Empty, rsp 
 
 func (us *UserService) Login(ctx context.Context, req *go_api.Request, rsp *go_api.Response) error {
 	if req.Method != "POST" {
-		return errors.BadRequest("go.micro.api.user", "require post")
+		return errors.BadRequest(micro_c.MicroNameUser, "require post")
 	}
 
 	ct, ok := req.Header["Content-Type"]
 	if !ok || len(ct.Values) == 0 {
-		return errors.BadRequest("go.micro.api.user", "need content-type")
+		return errors.BadRequest(micro_c.MicroNameUser, "need content-type")
 	}
 
 	if ct.Values[0] != "application/json" {
-		return errors.BadRequest("go.micro.api.user", "expect application/json")
+		return errors.BadRequest(micro_c.MicroNameUser, "expect application/json")
 	}
 
 	var userInfo user.UserInfo
@@ -57,7 +58,7 @@ func (us *UserService) Login(ctx context.Context, req *go_api.Request, rsp *go_a
 
 func main() {
 	userService := micro.NewService(
-		micro.Name("go.micro.api.user"),
+		micro.Name(micro_c.MicroNameUser),
 	)
 
 	userService.Init()

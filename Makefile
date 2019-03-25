@@ -1,6 +1,3 @@
-install:
-	dep ensure
-
 build:
 	cd api &&SET GOOS=linux&&SET GOARCH=amd64&&go build -o micro
 	cd service/greeter && protoc --proto_path=proto --proto_path=../../vendor --micro_out=proto --go_out=proto greeter.proto &&SET GOOS=linux&&SET GOARCH=amd64&&go build

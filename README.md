@@ -2,14 +2,13 @@
 
 ## 依赖
 * docker
-* golang、dep
+* golang
 * protoc、protoc-gen-go、protoc-gen-micro
 * make
 
 ## 运行方式
-1. `make install`
-2. `make build`
-3. `make run`
+1. `make build`
+2. `make run`
 
 ## 整体架构
 以 greeter/hello 为例，请求流程图如下：

@@ -1,17 +1,18 @@
 package main
 
 import (
-	"GoMicroExample/config"
 	"GoMicroExample/hystrix"
+	. "GoMicroExample/service/config"
+	"GoMicroExample/service/constant/micro_c"
 	greeterApi "GoMicroExample/service/greeter/proto"
+	"GoMicroExample/service/greeter/service"
 	"GoMicroExample/service/user/proto"
+	"GoMicroExample/service/util"
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/micro/cli"
 	"github.com/micro/go-api/proto"
 	"github.com/micro/go-micro"
-	"github.com/micro/go-micro/metadata"
 	"log"
 )
 
@@ -19,34 +20,20 @@ type Greeter struct {
 	userClient user.UserService
 }
 
-func (ga *Greeter) Hello(ctx context.Context, req *go_api.Request, rsp *go_api.Response) error {
+func (this *Greeter) Hello(ctx context.Context, req *go_api.Request, rsp *go_api.Response) error {
 	log.Print("Received Greeter.Hello API request")
-
-	meta, _ := metadata.FromContext(ctx)
-	log.Println(meta)
-	info, e := ga.userClient.GetUserInfo(ctx, &user.Empty{})
-
-	if e != nil {
-		return e
-	}
-
-	rsp.StatusCode = 200
-	b, _ := json.Marshal(
-		map[string]string{"_environment": "xx", "_message": "nice to meet u, I know your id, username in token, and password in db.",
-			"id": info.Id, "username": info.Username, "password": info.Password})
-
-	rsp.Body = string(b)
-	return nil
+	response, code, err := service.NewGreeterService().Greeter(ctx, this.userClient, nil)
+	return util.Resp(code, err, rsp, response)
 }
 
 var (
-	config map[string]interface{}
+	configMap map[string]interface{}
 )
 
 func main() {
 	hystrix.Configure([]string{"go.micro.api.user.User.GetUserInfo"})
 	greeterService := micro.NewService(
-		micro.Name("go.micro.api.greeter"),
+		micro.Name(micro_c.MicroNameGreeter),
 		micro.WrapClient(hystrix.NewClientWrapper()),
 		micro.Flags(
 			cli.StringFlag{
@@ -68,12 +55,12 @@ func main() {
 				fmt.Println("config_server set to", configServer)
 			}
 			// http://config-server:8081/greeter-prod.yml
-			config = conf.GetConfig(configServer, "greeter", profile)
-			fmt.Printf("config loaded from config-server is: %s\n", config)
+			configMap = GetConfig(configServer, "greeter", profile)
+			fmt.Printf("config loaded from config-server is: %s\n", configMap)
 		}))
 
 	greeterApi.RegisterGreeterHandler(greeterService.Server(), &Greeter{
-		userClient: user.NewUserService("go.micro.api.user", greeterService.Client())})
+		userClient: user.NewUserService(micro_c.MicroNameUser, greeterService.Client())})
 
 	if err := greeterService.Run(); err != nil {
 		log.Fatal(err)
