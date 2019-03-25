@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	LocalConfigMap map[string]interface{}
+	LocalConfig ConfigInfo
 )
 
 const (
@@ -18,8 +18,14 @@ const (
 	kConfigType    = "CONFIG_TYPE"
 )
 
-func GetConfig(configServerHost string, serverName string, profile string) map[string]interface{} {
-	var config map[string]interface{}
+type ConfigInfo struct {
+	Greetings struct {
+		String string `json:"string"`
+	} `json:"greetings"`
+}
+
+func GetConfig(configServerHost string, serverName string, profile string) ConfigInfo {
+	var config ConfigInfo
 
 	viper.AutomaticEnv()
 

@@ -23,10 +23,10 @@ type Greeter struct {
 }
 
 func (this *Greeter) Hello(ctx context.Context, req *go_api.Request, rsp *go_api.Response) error {
-	log.Print("Received Greeter.Hello API request")
-	var helloRequest dto.HelloRequest
+	log.Println("Received Greeter.Hello API request")
+	var helloRequest *dto.HelloRequest
 	json.Unmarshal([]byte(req.Body), &helloRequest)
-	response, code, err := service.NewGreeterService().Greeter(ctx, this.userClient, &helloRequest)
+	response, code, err := service.NewGreeterService().Greeter(ctx, this.userClient, helloRequest)
 	return util.Resp(code, err, rsp, response)
 }
 
@@ -55,8 +55,8 @@ func main() {
 				fmt.Println("config_server set to", configServer)
 			}
 			// http://config-server:8081/greeter-prod.yml
-			LocalConfigMap = GetConfig(configServer, "greeter", profile)
-			fmt.Printf("config loaded from config-server is: %s\n", LocalConfigMap)
+			LocalConfig = GetConfig(configServer, "greeter", profile)
+			fmt.Printf("config loaded from config-server is: %s\n", LocalConfig)
 		}))
 
 	greeterApi.RegisterGreeterHandler(greeterService.Server(), &Greeter{

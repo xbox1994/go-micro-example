@@ -26,11 +26,13 @@
 在服务间请求调用过程中，会有Hystrix来提供服务容错机制。在所有服务启动之前，会请求Config Service来获得对应服务的对应环境的配置信息。详见[这里](http://www.wangtianyi.top/blog/2018/09/28/ji-yu-go-microde-wei-fu-wu-jia-gou-ben-di-shi-zhan/?utm_source=github&utm_medium=github)
 
 ## 请求方式
-登录：
+#### 登录
+请求：
 ```bash
 curl -X POST \
   http://localhost:8080/user/login \
   -H 'Content-Type: application/json' \
+  -H 'cache-control: no-cache' \
   -d '{
 	"id": "x1",
 	"username": "wty",
@@ -38,7 +40,36 @@ curl -X POST \
 }'
 ```
 
-hello：
-```bash
+回应：
+```json
+{
+    "code": 0,
+    "message": "ok",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VyIjp7ImlkIjoieDEiLCJ1c2VybmFtZSI6Ind0eSIsInBhc3N3b3JkIjoieHh4In0sImV4cCI6MTU1Mzc2MjA5OCwiaXNzIjoiZ28ubWljcm8uYXBpLnVzZXIifQ.mpUfLPGjHR7GCeDHgrUICbWuiK8fE_xZ5IfYRHyYBoE"
+}
+```
 
+#### Hello
+请求：
+```bash
+curl -X POST \
+  http://localhost:8080/greeter/hello \
+  -H 'Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VyIjp7ImlkIjoieDEiLCJ1c2VybmFtZSI6Ind0eSIsInBhc3N3b3JkIjoieHh4In0sImV4cCI6MTU1Mzc2MjA5OCwiaXNzIjoiZ28ubWljcm8uYXBpLnVzZXIifQ.mpUfLPGjHR7GCeDHgrUICbWuiK8fE_xZ5IfYRHyYBoE' \
+  -H 'Content-Type: application/json' \
+  -H 'cache-control: no-cache' \
+  -d '{
+	"name": "wty"
+}'
+```
+
+回应：
+```json
+{
+    "code": 0,
+    "id": "x1",
+    "message": "ok",
+    "password": "password from db",
+    "setting_message": "Hi, here are greetings from test",
+    "username": "wty"
+}
 ```

@@ -16,7 +16,7 @@ func NewUserService() *UserService {
 }
 
 func (this *UserService) Login(req *user.UserInfo) (*dto.LoginResponse, int32, error) {
-	if req.Id == "" || req.Username == "" || req.Password == "" {
+	if req == nil || req.Id == "" || req.Username == "" || req.Password == "" {
 		return nil, code.InvalidParam, errors.New("param invalid")
 	}
 

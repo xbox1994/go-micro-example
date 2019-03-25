@@ -19,7 +19,7 @@ type UserService struct {
 }
 
 func (us *UserService) GetUserInfo(ctx context.Context, req *userApi.Empty, rsp *userApi.UserInfo) error {
-	log.Print("Received User.GetUserInfo RPC request")
+	log.Println("Received User.GetUserInfo RPC request")
 	meta, ok := metadata.FromContext(ctx)
 	if !ok {
 		return errors.Unauthorized(micro_c.MicroNameUser, "no auth meta-data found in request")
@@ -31,10 +31,10 @@ func (us *UserService) GetUserInfo(ctx context.Context, req *userApi.Empty, rsp 
 }
 
 func (us *UserService) Login(ctx context.Context, req *go_api.Request, rsp *go_api.Response) error {
-	log.Print("Received User.Login API request")
-	var userInfo user.UserInfo
+	var userInfo *user.UserInfo
 	json.Unmarshal([]byte(req.Body), &userInfo)
-	response, code, err := service.NewUserService().Login(&userInfo)
+	log.Println("Received User.Login API request with: ", userInfo)
+	response, code, err := service.NewUserService().Login(userInfo)
 	return util.Resp(code, err, rsp, response)
 }
 
