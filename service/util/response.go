@@ -2,11 +2,8 @@ package util
 
 import (
 	"common/log"
-	"context"
 	"encoding/json"
 	"github.com/micro/go-api/proto"
-	"github.com/micro/go-micro/metadata"
-	"strconv"
 )
 
 type CommonResponse struct {
@@ -38,24 +35,4 @@ func changeBody(code int32, msg string, rsp *go_api.Response, response interface
 
 	bytes, _ := json.Marshal(bodyMap)
 	rsp.Body = string(bytes)
-}
-
-func GetUserId(ctx context.Context) int64 {
-	fromContext, b := metadata.FromContext(ctx)
-	if b {
-		result, e := strconv.ParseInt(fromContext["X-Gateway-Uid"], 10, 64)
-		if e != nil {
-			return 0
-		}
-		return result
-	}
-	return 0
-}
-
-func GetNickname(ctx context.Context) string {
-	fromContext, b := metadata.FromContext(ctx)
-	if b {
-		return fromContext["X-Gateway-Nickname"]
-	}
-	return ""
 }

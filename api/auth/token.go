@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"GoMicroExample/service/constant/micro_c"
 	"GoMicroExample/service/user/proto"
 	"github.com/dgrijalva/jwt-go"
 	"time"
@@ -38,7 +39,7 @@ func Encode(user *user.UserInfo) (string, error) {
 	claims := CustomClaims{
 		user,
 		jwt.StandardClaims{
-			Issuer:    "go.micro.api.user", // 签发者
+			Issuer:    micro_c.MicroNameUser, // 签发者
 			ExpiresAt: expireTime,
 		},
 	}

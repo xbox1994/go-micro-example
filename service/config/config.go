@@ -7,6 +7,10 @@ import (
 	"net/http"
 )
 
+var (
+	LocalConfigMap map[string]interface{}
+)
+
 const (
 	kAppName       = "APP_NAME"
 	kConfigServer  = "CONFIG_SERVER"

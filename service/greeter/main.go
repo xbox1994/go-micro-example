@@ -4,11 +4,13 @@ import (
 	"GoMicroExample/hystrix"
 	. "GoMicroExample/service/config"
 	"GoMicroExample/service/constant/micro_c"
+	"GoMicroExample/service/greeter/dto"
 	greeterApi "GoMicroExample/service/greeter/proto"
 	"GoMicroExample/service/greeter/service"
 	"GoMicroExample/service/user/proto"
 	"GoMicroExample/service/util"
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/micro/cli"
 	"github.com/micro/go-api/proto"
@@ -22,13 +24,11 @@ type Greeter struct {
 
 func (this *Greeter) Hello(ctx context.Context, req *go_api.Request, rsp *go_api.Response) error {
 	log.Print("Received Greeter.Hello API request")
-	response, code, err := service.NewGreeterService().Greeter(ctx, this.userClient, nil)
+	var helloRequest dto.HelloRequest
+	json.Unmarshal([]byte(req.Body), &helloRequest)
+	response, code, err := service.NewGreeterService().Greeter(ctx, this.userClient, &helloRequest)
 	return util.Resp(code, err, rsp, response)
 }
-
-var (
-	configMap map[string]interface{}
-)
 
 func main() {
 	hystrix.Configure([]string{"go.micro.api.user.User.GetUserInfo"})
@@ -55,8 +55,8 @@ func main() {
 				fmt.Println("config_server set to", configServer)
 			}
 			// http://config-server:8081/greeter-prod.yml
-			configMap = GetConfig(configServer, "greeter", profile)
-			fmt.Printf("config loaded from config-server is: %s\n", configMap)
+			LocalConfigMap = GetConfig(configServer, "greeter", profile)
+			fmt.Printf("config loaded from config-server is: %s\n", LocalConfigMap)
 		}))
 
 	greeterApi.RegisterGreeterHandler(greeterService.Server(), &Greeter{

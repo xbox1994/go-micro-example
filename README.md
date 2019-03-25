@@ -7,6 +7,9 @@
 * make
 
 ## 运行方式
+
+仅Windows平台，其他平台请参考Makefile运行
+
 1. `make build`
 2. `make run`
 
@@ -21,3 +24,21 @@
 4. UserService根据header中得到的id查询数据库得到具体的用户信息并返回
 
 在服务间请求调用过程中，会有Hystrix来提供服务容错机制。在所有服务启动之前，会请求Config Service来获得对应服务的对应环境的配置信息。详见[这里](http://www.wangtianyi.top/blog/2018/09/28/ji-yu-go-microde-wei-fu-wu-jia-gou-ben-di-shi-zhan/?utm_source=github&utm_medium=github)
+
+## 请求方式
+登录：
+```bash
+curl -X POST \
+  http://localhost:8080/user/login \
+  -H 'Content-Type: application/json' \
+  -d '{
+	"id": "x1",
+	"username": "wty",
+	"password": "xxx"
+}'
+```
+
+hello：
+```bash
+
+```
