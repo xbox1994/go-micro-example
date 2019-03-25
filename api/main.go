@@ -1,9 +1,9 @@
 package main
 
 import (
-	"GoMicroExample/api/auth"
 	"github.com/micro/micro/cmd"
 	"github.com/micro/micro/plugin"
+	"go-micro-example/api/auth"
 )
 
 func init() {

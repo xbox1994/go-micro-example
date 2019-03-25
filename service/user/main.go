@@ -1,17 +1,17 @@
 package main
 
 import (
-	"GoMicroExample/service/constant/micro_c"
-	"GoMicroExample/service/user/proto"
-	userApi "GoMicroExample/service/user/proto"
-	"GoMicroExample/service/user/service"
-	"GoMicroExample/service/util"
 	"context"
 	"encoding/json"
 	"github.com/micro/go-api/proto"
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/errors"
 	"github.com/micro/go-micro/metadata"
+	"go-micro-example/service/constant/micro_c"
+	"go-micro-example/service/user/proto"
+	userApi "go-micro-example/service/user/proto"
+	"go-micro-example/service/user/service"
+	"go-micro-example/service/util"
 	"log"
 )
 

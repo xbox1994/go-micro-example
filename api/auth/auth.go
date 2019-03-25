@@ -1,11 +1,11 @@
 package auth
 
 import (
-	"GoMicroExample/service/constant/code"
-	"GoMicroExample/service/util"
 	"encoding/json"
 	"github.com/micro/cli"
 	"github.com/micro/micro/plugin"
+	"go-micro-example/service/constant/code"
+	"go-micro-example/service/util"
 	"log"
 	"net/http"
 )

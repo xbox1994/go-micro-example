@@ -1,20 +1,20 @@
 package main
 
 import (
-	"GoMicroExample/hystrix"
-	. "GoMicroExample/service/config"
-	"GoMicroExample/service/constant/micro_c"
-	"GoMicroExample/service/greeter/dto"
-	greeterApi "GoMicroExample/service/greeter/proto"
-	"GoMicroExample/service/greeter/service"
-	"GoMicroExample/service/user/proto"
-	"GoMicroExample/service/util"
 	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/micro/cli"
 	"github.com/micro/go-api/proto"
 	"github.com/micro/go-micro"
+	"go-micro-example/hystrix"
+	. "go-micro-example/service/config"
+	"go-micro-example/service/constant/micro_c"
+	"go-micro-example/service/greeter/dto"
+	greeterApi "go-micro-example/service/greeter/proto"
+	"go-micro-example/service/greeter/service"
+	"go-micro-example/service/user/proto"
+	"go-micro-example/service/util"
 	"log"
 )
 

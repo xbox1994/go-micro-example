@@ -16,7 +16,7 @@
 ## 整体架构
 以 greeter/hello 为例，请求流程图如下：
 
-![](https://github.com/xbox1994/GoMicroExample/raw/master/index.png)
+![](https://github.com/xbox1994/go-micro-example/raw/master/index.png)
 
 1. 访问greeter/hello
 2. Micro Api解析请求，验证身份是否有效，决定请求是否继续传递，如果有效，则将解析出来的用户信息写到header中

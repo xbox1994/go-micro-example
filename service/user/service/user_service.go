@@ -1,11 +1,11 @@
 package service
 
 import (
-	"GoMicroExample/api/auth"
-	"GoMicroExample/service/constant/code"
-	"GoMicroExample/service/user/dto"
-	"GoMicroExample/service/user/proto"
 	"errors"
+	"go-micro-example/api/auth"
+	"go-micro-example/service/constant/code"
+	"go-micro-example/service/user/dto"
+	"go-micro-example/service/user/proto"
 )
 
 type UserService struct {

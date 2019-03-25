@@ -1,12 +1,12 @@
 package service
 
 import (
-	"GoMicroExample/service/config"
-	"GoMicroExample/service/constant/code"
-	"GoMicroExample/service/greeter/dto"
-	"GoMicroExample/service/user/proto"
 	"context"
 	"errors"
+	"go-micro-example/service/config"
+	"go-micro-example/service/constant/code"
+	"go-micro-example/service/greeter/dto"
+	"go-micro-example/service/user/proto"
 )
 
 type GreeterService struct {
