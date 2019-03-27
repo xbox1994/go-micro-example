@@ -50,12 +50,8 @@ func main() {
 			if len(profile) > 0 {
 				fmt.Println("profile set to", profile)
 			}
-			configServer := c.String("config_server")
-			if len(configServer) > 0 {
-				fmt.Println("config_server set to", configServer)
-			}
 			// http://config-server:8081/greeter-prod.yml
-			LocalConfig = GetConfig(configServer, "greeter", profile)
+			LocalConfig = GetConfig(micro_c.MicroConfigService, "greeter", profile)
 			fmt.Printf("config loaded from config-server is: %s\n", LocalConfig)
 		}))
 

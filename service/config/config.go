@@ -2,8 +2,11 @@ package config
 
 import (
 	"fmt"
+	"github.com/Unknwon/com"
+	consul "github.com/hashicorp/consul/api"
 	"github.com/spf13/viper"
 	"log"
+	"math/rand"
 	"net/http"
 )
 
@@ -30,7 +33,7 @@ func GetConfig(configServerHost string, serverName string, profile string) Confi
 	viper.AutomaticEnv()
 
 	viper.SetDefault(kAppName, serverName)
-	viper.SetDefault(kConfigServer, configServerHost)
+	viper.SetDefault(kConfigServer, getConfigServiceFromConsul(configServerHost))
 	viper.SetDefault(kConfigProfile, profile)
 	viper.SetDefault(kConfigType, "yaml")
 
@@ -60,4 +63,23 @@ func loadRemoteConfig() (err error) {
 	}
 	log.Println("Load config from: ", confAddr)
 	return
+}
+
+func getConfigServiceFromConsul(configServerHost string) string {
+	client, e := consul.NewClient(consul.DefaultConfig())
+	if e != nil {
+		log.Println("consul client create failed: ", e)
+		return ""
+	}
+	rsp, _, e := client.Health().Service(configServerHost, "", true, nil)
+	if e != nil {
+		log.Println("consul request failed: ", e)
+		return ""
+	}
+	if rsp == nil || len(rsp) == 0 {
+		log.Println("config service not found in consul: ", configServerHost)
+		return ""
+	}
+	service := rsp[rand.Int()%len(rsp)]
+	return "http://" + service.Service.Address + ":" + com.ToStr(service.Service.Port)
 }
