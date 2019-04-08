@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	LocalConfig ConfigInfo
+	LocalConfig ConfInfo
 )
 
 const (
@@ -21,14 +21,14 @@ const (
 	kConfigType    = "CONFIG_TYPE"
 )
 
-type ConfigInfo struct {
+type ConfInfo struct {
 	Greetings struct {
 		String string `json:"string"`
 	} `json:"greetings"`
 }
 
-func GetConfig(configServerHost string, serverName string, profile string) ConfigInfo {
-	var config ConfigInfo
+func GetConfig(configServerHost string, serverName string, profile string) ConfInfo {
+	var config ConfInfo
 
 	viper.AutomaticEnv()
 

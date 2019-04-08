@@ -38,8 +38,6 @@ func main() {
 		micro.Flags(
 			cli.StringFlag{
 				Name: "profile",
-			}, cli.StringFlag{
-				Name: "config_server",
 			},
 		),
 	)

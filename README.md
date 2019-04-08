@@ -1,6 +1,6 @@
 基于go micro框架搭建的简单微服务例子，包含微服务组件网关、配置中心、熔断器以及具体服务。
 
-详见[这里](https://www.wangtianyi.top/blog/2019/03/26/ji-yu-go-microde-wei-fu-wu-jia-gou-ben-di-shi-zhan/?utm_source=github&utm_medium=github)
+注意：[必须配合参考这篇文章](https://www.wangtianyi.top/blog/2019/03/26/ji-yu-go-microde-wei-fu-wu-jia-gou-ben-di-shi-zhan/?utm_source=github&utm_medium=github)
 
 ## 依赖
 * docker
